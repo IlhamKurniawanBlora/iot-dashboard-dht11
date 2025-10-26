@@ -1,0 +1,19 @@
+# Build context exclusions for Docker
+__pycache__
+*.pyc
+*.pyo
+*.egg-info
+.git
+.gitignore
+.env
+.env.local
+venv/
+env/
+*.md
+.vscode/
+.idea/
+Thumbs.db
+.DS_Store
+.pytest_cache/
+.coverage
+htmlcov/
