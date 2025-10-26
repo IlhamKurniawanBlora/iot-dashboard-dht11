@@ -3,12 +3,19 @@ import json
 from datetime import datetime
 from collections import deque
 import threading
+import os
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
 
 # Configuration
-MQTT_BROKER = "broker.emqx.io"
-MQTT_PORT = 1883
-MQTT_TOPIC = "dht11/sensor"
-MAX_DATA_POINTS = 100
+MQTT_BROKER = os.getenv("MQTT_BROKER", "broker.emqx.io")
+MQTT_PORT = int(os.getenv("MQTT_PORT", 1883))
+MQTT_TOPIC = os.getenv("MQTT_TOPIC", "dht11/sensor")
+MQTT_QOS = int(os.getenv("MQTT_QOS", 1))
+MQTT_KEEPALIVE = int(os.getenv("MQTT_KEEPALIVE", 60))
+MAX_DATA_POINTS = int(os.getenv("MAX_DATA_POINTS", 100))
 
 # Global data storage
 sensor_data = {

@@ -8,11 +8,19 @@ import json
 import time
 import random
 from datetime import datetime
+import ssl
+import os
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
 
 # Configuration
-MQTT_BROKER = "broker.emqx.io"
-MQTT_PORT = 1883
-MQTT_TOPIC = "dht11/sensor"
+MQTT_BROKER = os.getenv("MQTT_BROKER", "broker.emqx.io")
+MQTT_PORT = int(os.getenv("MQTT_PORT", 1883))
+MQTT_TOPIC = os.getenv("MQTT_TOPIC", "dht11/sensor")
+USERNAME = os.getenv("USERNAME", "weresick")
+PASSWORD = os.getenv("PASSWORD", "juara123")
 
 # Base values
 BASE_TEMPERATURE = 24.0  # °C
@@ -72,8 +80,18 @@ def main():
     client.on_connect = on_connect
     client.on_disconnect = on_disconnect
     
+    # Set username and password if provided
+    if USERNAME and PASSWORD:
+        client.username_pw_set(USERNAME, PASSWORD)
+    
     try:
         print("🔗 Connecting to broker...")
+        
+        # Enable SSL/TLS for port 8883
+        if MQTT_PORT == 8883:
+            client.tls_set(cert_reqs=ssl.CERT_REQUIRED, ciphers=None)
+            client.tls_insecure_set(False)
+        
         client.connect(MQTT_BROKER, MQTT_PORT, keepalive=60)
         client.loop_start()
         

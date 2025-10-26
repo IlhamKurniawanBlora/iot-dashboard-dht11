@@ -3,14 +3,18 @@ from dash import dcc, html, callback, Input, Output
 import plotly.graph_objects as go
 from datetime import datetime
 import os
+from dotenv import load_dotenv
 from mqtt_client import start_mqtt_connection, get_sensor_data, get_latest_reading
+
+# Load environment variables from .env file
+load_dotenv()
 
 # Initialize MQTT connection
 mqtt_client = start_mqtt_connection()
 
 # Initialize Dash app
 app = dash.Dash(__name__, assets_folder="assets")
-app.title = "IoT Dashboard - DHT11 Sensor"
+app.title = os.getenv("TITLE", "IoT Dashboard - DHT11 Sensor")
 
 # Custom CSS variables for dark theme
 app.index_string = '''
@@ -58,7 +62,7 @@ app.layout = html.Div(
                             },
                         ),
                         html.P(
-                            "Real-time DHT11 Sensor Monitoring via MQTT",
+                            os.getenv("SUBTITLE", "Real-time DHT11 Sensor Monitoring via MQTT"),
                             style={
                                 "margin": "0.5rem 0 0 0",
                                 "color": "#cbd5e1",
@@ -439,12 +443,13 @@ def update_humidity_chart(n):
 
 
 if __name__ == "__main__":
-    # Get port from environment or use default
-    port = int(os.environ.get("PORT", 8050))
+    # Get port and debug from environment or use defaults
+    port = int(os.getenv("PORT", 8050))
+    debug = os.getenv("DEBUG", "False").lower() in ("true", "1", "yes")
     
     # Run the app
     app.run_server(
-        debug=False,
+        debug=debug,
         host="0.0.0.0",
         port=port,
     )
